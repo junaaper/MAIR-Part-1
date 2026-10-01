@@ -1,0 +1,43 @@
+# Test set for compare_matchers.py: utterances where keyword matching fails
+# Format: category <TAB> asked slot (- if none) <TAB> expected slot=value (none = should not match) <TAB> utterance
+typo	-	food=spanish	i want a restaurant serving spenish food
+typo	-	food=chinese	chines food please
+typo	-	food=italian	an italien restaurant
+typo	-	food=thai	thia food
+typo	-	food=vietnamese	i want vietnamise food
+typo	-	food=portuguese	portugese food
+typo	-	food=korean	koren food
+typo	-	food=turkish	turkis food
+typo	-	food=lebanese	lebanes food
+typo	food	food=chinese	chinse
+typo	-	area=north	somewhere in the nort part of town
+typo	-	area=south	the sout part of town
+typo	-	area=centre	in the cntre
+typo	-	pricerange=cheap	a cheep restaurant
+typo	-	pricerange=moderate	moderat priced restaurant
+typo	-	pricerange=expensive	an expensiv restaurant
+paraphrase	-	pricerange=expensive	a fancy restaurant
+paraphrase	-	pricerange=cheap	an inexpensive restaurant
+paraphrase	-	pricerange=expensive	a pricey restaurant
+paraphrase	-	pricerange=cheap	an affordable restaurant
+paraphrase	-	pricerange=expensive	an upscale restaurant
+paraphrase	-	pricerange=cheap	a budget restaurant
+paraphrase	-	pricerange=expensive	a costly restaurant
+paraphrase	-	area=north	the northern part of town
+paraphrase	-	area=south	the southern part of town
+paraphrase	-	area=east	the eastern part of town
+paraphrase	-	area=west	the western part of town
+paraphrase	area	area=centre	downtown
+paraphrase	food	food=japanese	sushi
+paraphrase	food	food=italian	pizza
+paraphrase	food	food=indian	curry
+paraphrase	food	food=chinese	noodles
+none	-	none	a nice restaurant
+none	-	none	a good restaurant
+none	-	none	a lovely restaurant
+none	-	none	a big restaurant
+none	-	none	a quiet restaurant
+none	-	none	brazilian food
+none	-	none	german food
+none	-	none	danish food
+none	-	none	somewhere in the city

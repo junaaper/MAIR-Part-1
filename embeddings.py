@@ -12,9 +12,10 @@ embed_model = AutoModel.from_pretrained(MODEL_NAME).to(DEVICE)
 embed_model.eval()  # Frozen: no fine-tuning, no dropout at inference
 
 @torch.no_grad()
-def get_embeddings(texts, batch_size=64, max_length=32):
+def get_embeddings(texts, batch_size=64, max_length=32, show_progress=True, skip_special=False):
+    # skip_special leaves [CLS] and [SEP] out of the mean, they dominate the embedding of very short texts
     all_embeddings = []
-    for i in tqdm(range(0, len(texts), batch_size)):
+    for i in tqdm(range(0, len(texts), batch_size), disable=not show_progress):
         batch = texts[i:i + batch_size]
         encoded = tokenizer(
             batch, padding=True, truncation=True,
@@ -24,7 +25,11 @@ def get_embeddings(texts, batch_size=64, max_length=32):
         output = embed_model(**encoded)
         token_embeddings = output.last_hidden_state
 
-        mask = encoded["attention_mask"].unsqueeze(-1).expand(token_embeddings.size()).float()
+        attention = encoded["attention_mask"].clone()
+        if skip_special:
+            attention[encoded["input_ids"] == tokenizer.cls_token_id] = 0
+            attention[encoded["input_ids"] == tokenizer.sep_token_id] = 0
+        mask = attention.unsqueeze(-1).expand(token_embeddings.size()).float()
         summed = (token_embeddings * mask).sum(dim=1)
         counts = mask.sum(dim=1).clamp(min=1e-9)
         mean_pooled = summed / counts
