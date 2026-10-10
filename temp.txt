@@ -1,0 +1,2 @@
+python dialog_manager.py --recommendation-mode eager --debug
+python dialog_manager.py --recommendation-mode patient --debug
