@@ -351,19 +351,31 @@ def _collecting(state, act, utterance):
     """States 1, 2 and 4: the system is gathering preferences."""
     requirements, rest = split_requirements(utterance)
     extraction = extract(rest, state.asked_slot, state.matcher)
-    if _update_preferences(state, extraction):
-        return _after_update(state)
-    if _update_requirements(state, requirements, replace=state.state == NO_MATCH):
-        return _combination_available(state) if state.state == NO_MATCH else _after_update(state)
-    if act == "request" and state.current and extraction.requests:
-        return _give_info(state, extraction.requests)
-    if act == "request":
-        return _reprompt(state, render("no_suggestion_yet"))
-    if state.state == WELCOME and act in ("inform", "hello", "null"):
-        return _all_info_known(state)
-    if act == "null":
-        return _reprompt(state, render("not_understood"))
-    return state.last_utterance
+
+    if state.recommendation_mode == "eager":
+        prefs_changed = _update_preferences(state, extraction)
+        extra_changed = _update_requirements(state, requirements, replace=state.state == NO_MATCH)
+
+        if prefs_changed or extra_changed:
+            if state.state == NO_MATCH and extra_changed and not prefs_changed:
+                return _combination_available(state)
+            return _after_update(state)
+
+    else:
+
+        if _update_preferences(state, extraction):
+            return _after_update(state)
+        if _update_requirements(state, requirements, replace=state.state == NO_MATCH):
+            return _combination_available(state) if state.state == NO_MATCH else _after_update(state)
+        if act == "request" and state.current and extraction.requests:
+            return _give_info(state, extraction.requests)
+        if act == "request":
+            return _reprompt(state, render("no_suggestion_yet"))
+        if state.state == WELCOME and act in ("inform", "hello", "null"):
+            return _all_info_known(state)
+        if act == "null":
+            return _reprompt(state, render("not_understood"))
+        return state.last_utterance
 
 
 def _confirm(state, act, utterance):
