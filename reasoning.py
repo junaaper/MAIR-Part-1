@@ -34,9 +34,11 @@ PROPERTY_PHRASES = {
     "romantic": ("it is romantic", "it is not romantic"),
 }
 
-NEGATIVE_WINS = True
+# When two rules disagree, the positive conclusion wins, so a restaurant isn't ruled out by one conflicting rule
+NEGATIVE_WINS = False
 
-DEFAULTS = {"touristic": False, "assigned seats": False, "children": True, "romantic": False}
+# What happens when no rule says anything explicitly
+DEFAULTS = {"touristic": False, "assigned seats": False, "children": False, "romantic": False}
 
 
 def _normalize(value):
@@ -90,8 +92,8 @@ class Conclusion:
 def resolve(restaurant, prop, rules=RULES):
     """
     The value of one property for one restaurant, with contradictions resolved.
-    When rules disagree the negative conclusion wins (see NEGATIVE_WINS), and the rules on the
-    losing side are kept in the Conclusion so the system can tell the user about the conflict.
+    When rules disagree the strategy in NEGATIVE_WINS decides, and the rules on the losing side
+    are kept in the Conclusion so the system can tell the user about the conflict.
     """
     conclusions = infer(restaurant, rules).get(prop, [])
     if not conclusions:
@@ -127,6 +129,6 @@ def explain(restaurant, requirements, rules=RULES, mention_conflict=True):
             part = f"{phrase}, since none of the rules say otherwise"
         if mention_conflict and conclusion.conflicting:
             losing = " and ".join(rule.reason for rule in conclusion.conflicting)
-            part += f" (even though {losing}, so the rules disagree and I keep the negative conclusion)"
+            part += f" (note: one rule suggested otherwise, because {losing})"
         parts.append(part)
     return ", and ".join(parts)

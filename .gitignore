@@ -1,3 +1,8 @@
 misc/
 __pycache__/
 .venv/
+
+# Interaction logs from test runs, only the example log is kept in the repository
+logs/*.jsonl
+!logs/example_dialog.jsonl
+temp.txt

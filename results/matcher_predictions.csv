@@ -1,83 +1,83 @@
 matcher,category,asked,slot,value,expected,utterance,prediction,outcome,ms
-levenshtein,typo,,food,spanish,food=spanish,i want a restaurant serving spenish food,spanish,correct,2.65370006673038
-levenshtein,typo,,food,chinese,food=chinese,chines food please,chinese,correct,0.20499993115663528
-levenshtein,typo,,food,italian,food=italian,an italien restaurant,italian,correct,0.1938999630510807
-levenshtein,typo,,food,thai,food=thai,thia food,thai,correct,0.14519994147121906
-levenshtein,typo,,food,vietnamese,food=vietnamese,i want vietnamise food,vietnamese,correct,0.20210002548992634
-levenshtein,typo,,food,portuguese,food=portuguese,portugese food,portuguese,correct,0.14240015298128128
-levenshtein,typo,,food,korean,food=korean,koren food,korean,correct,0.13970001600682735
-levenshtein,typo,,food,turkish,food=turkish,turkis food,turkish,correct,0.14360016211867332
-levenshtein,typo,,food,lebanese,food=lebanese,lebanes food,lebanese,correct,0.13859989121556282
-levenshtein,typo,food,food,chinese,food=chinese,chinse,chinese,correct,0.12070010416209698
-levenshtein,typo,,area,north,area=north,somewhere in the nort part of town,north,correct,0.3233000170439482
-levenshtein,typo,,area,south,area=south,the sout part of town,south,correct,0.2717999741435051
-levenshtein,typo,,area,centre,area=centre,in the cntre,centre,correct,0.24940003640949726
-levenshtein,typo,,pricerange,cheap,pricerange=cheap,a cheep restaurant,cheap,correct,0.2686998341232538
-levenshtein,typo,,pricerange,moderate,pricerange=moderate,moderat priced restaurant,moderate,correct,0.21270010620355606
-levenshtein,typo,,pricerange,expensive,pricerange=expensive,an expensiv restaurant,expensive,correct,0.2443001139909029
-levenshtein,paraphrase,,pricerange,expensive,pricerange=expensive,a fancy restaurant,,no match,0.2513001672923565
-levenshtein,paraphrase,,pricerange,cheap,pricerange=cheap,an inexpensive restaurant,expensive,false match,0.23959996178746223
-levenshtein,paraphrase,,pricerange,expensive,pricerange=expensive,a pricey restaurant,,no match,0.21530012600123882
-levenshtein,paraphrase,,pricerange,cheap,pricerange=cheap,an affordable restaurant,,no match,0.193099956959486
-levenshtein,paraphrase,,pricerange,expensive,pricerange=expensive,an upscale restaurant,,no match,0.1898000482469797
-levenshtein,paraphrase,,pricerange,cheap,pricerange=cheap,a budget restaurant,,no match,0.1881001517176628
-levenshtein,paraphrase,,pricerange,expensive,pricerange=expensive,a costly restaurant,,no match,0.20810007117688656
-levenshtein,paraphrase,,area,north,area=north,the northern part of town,north,correct,0.23959996178746223
-levenshtein,paraphrase,,area,south,area=south,the southern part of town,south,correct,0.21869991905987263
-levenshtein,paraphrase,,area,east,area=east,the eastern part of town,east,correct,0.21549989469349384
-levenshtein,paraphrase,,area,west,area=west,the western part of town,west,correct,0.26689982041716576
-levenshtein,paraphrase,area,area,centre,area=centre,downtown,,no match,0.1385000068694353
-levenshtein,paraphrase,food,food,japanese,food=japanese,sushi,,no match,0.1509999856352806
-levenshtein,paraphrase,food,food,italian,food=italian,pizza,,no match,0.1175999641418457
-levenshtein,paraphrase,food,food,indian,food=indian,curry,,no match,0.09330012835562229
-levenshtein,paraphrase,food,food,chinese,food=chinese,noodles,,no match,0.09609991684556007
-levenshtein,none,,,,none,a nice restaurant,,correct,0.16249995678663254
-levenshtein,none,,,,none,a good restaurant,,correct,0.14890008606016636
-levenshtein,none,,,,none,a lovely restaurant,,correct,0.19839988090097904
-levenshtein,none,,,,none,a big restaurant,,correct,0.18349988386034966
-levenshtein,none,,,,none,a quiet restaurant,,correct,0.18700002692639828
-levenshtein,none,,,,none,brazilian food,,correct,0.246700132265687
-levenshtein,none,,,,none,german food,,correct,0.17300015315413475
-levenshtein,none,,,,none,danish food,food=spanish,false match,0.17409981228411198
-levenshtein,none,,,,none,somewhere in the city,,correct,0.20190002396702766
-semantic,typo,,food,spanish,food=spanish,i want a restaurant serving spenish food,,no match,17.750200117006898
-semantic,typo,,food,chinese,food=chinese,chines food please,,no match,15.239400090649724
-semantic,typo,,food,italian,food=italian,an italien restaurant,,no match,17.980400007218122
-semantic,typo,,food,thai,food=thai,thia food,,no match,15.652300091460347
-semantic,typo,,food,vietnamese,food=vietnamese,i want vietnamise food,,no match,15.406499849632382
-semantic,typo,,food,portuguese,food=portuguese,portugese food,,no match,19.46370000950992
-semantic,typo,,food,korean,food=korean,koren food,,no match,14.92249988950789
-semantic,typo,,food,turkish,food=turkish,turkis food,,no match,14.638399938121438
-semantic,typo,,food,lebanese,food=lebanese,lebanes food,,no match,21.442400058731437
-semantic,typo,food,food,chinese,food=chinese,chinse,,no match,19.45789996534586
-semantic,typo,,area,north,area=north,somewhere in the nort part of town,,no match,14.28720005787909
-semantic,typo,,area,south,area=south,the sout part of town,,no match,16.228499822318554
-semantic,typo,,area,centre,area=centre,in the cntre,,no match,15.079299919307232
-semantic,typo,,pricerange,cheap,pricerange=cheap,a cheep restaurant,,no match,15.745100099593401
-semantic,typo,,pricerange,moderate,pricerange=moderate,moderat priced restaurant,,no match,15.280700055882335
-semantic,typo,,pricerange,expensive,pricerange=expensive,an expensiv restaurant,,no match,15.4339000582695
-semantic,paraphrase,,pricerange,expensive,pricerange=expensive,a fancy restaurant,expensive,correct,14.951300108805299
-semantic,paraphrase,,pricerange,cheap,pricerange=cheap,an inexpensive restaurant,cheap,correct,19.824400078505278
-semantic,paraphrase,,pricerange,expensive,pricerange=expensive,a pricey restaurant,,no match,15.764100011438131
-semantic,paraphrase,,pricerange,cheap,pricerange=cheap,an affordable restaurant,moderate,false match,14.513100031763315
-semantic,paraphrase,,pricerange,expensive,pricerange=expensive,an upscale restaurant,expensive,correct,14.222699915990233
-semantic,paraphrase,,pricerange,cheap,pricerange=cheap,a budget restaurant,cheap,correct,14.894200023263693
-semantic,paraphrase,,pricerange,expensive,pricerange=expensive,a costly restaurant,expensive,correct,17.173699801787734
-semantic,paraphrase,,area,north,area=north,the northern part of town,north,correct,20.921000046655536
-semantic,paraphrase,,area,south,area=south,the southern part of town,,no match,22.406899835914373
-semantic,paraphrase,,area,east,area=east,the eastern part of town,east,correct,16.764200059697032
-semantic,paraphrase,,area,west,area=west,the western part of town,,no match,15.80860000103712
-semantic,paraphrase,area,area,centre,area=centre,downtown,,no match,21.158700110390782
-semantic,paraphrase,food,food,japanese,food=japanese,sushi,,no match,22.28630008175969
-semantic,paraphrase,food,food,italian,food=italian,pizza,,no match,18.18029978312552
-semantic,paraphrase,food,food,indian,food=indian,curry,,no match,18.612299812957644
-semantic,paraphrase,food,food,chinese,food=chinese,noodles,,no match,16.315400134772062
-semantic,none,,,,none,a nice restaurant,,correct,0.201700022444129
-semantic,none,,,,none,a good restaurant,,correct,0.18700002692639828
-semantic,none,,,,none,a lovely restaurant,,correct,22.05329993739724
-semantic,none,,,,none,a big restaurant,,correct,19.215699983760715
-semantic,none,,,,none,a quiet restaurant,,correct,16.81900001130998
-semantic,none,,,,none,brazilian food,food=portuguese,false match,15.412400010973215
-semantic,none,,,,none,german food,,correct,16.177400015294552
-semantic,none,,,,none,danish food,,correct,15.55410004220903
-semantic,none,,,,none,somewhere in the city,,correct,14.59969999268651
+levenshtein,typo,,food,spanish,food=spanish,i want a restaurant serving spenish food,spanish,correct,2.4837995879352093
+levenshtein,typo,,food,chinese,food=chinese,chines food please,chinese,correct,0.18929969519376755
+levenshtein,typo,,food,italian,food=italian,an italien restaurant,italian,correct,0.26480015367269516
+levenshtein,typo,,food,thai,food=thai,thia food,thai,correct,0.22160029038786888
+levenshtein,typo,,food,vietnamese,food=vietnamese,i want vietnamise food,vietnamese,correct,0.2951999194920063
+levenshtein,typo,,food,portuguese,food=portuguese,portugese food,portuguese,correct,0.20200014114379883
+levenshtein,typo,,food,korean,food=korean,koren food,korean,correct,0.2009999006986618
+levenshtein,typo,,food,turkish,food=turkish,turkis food,turkish,correct,0.20409980788826942
+levenshtein,typo,,food,lebanese,food=lebanese,lebanes food,lebanese,correct,0.20619994029402733
+levenshtein,typo,food,food,chinese,food=chinese,chinse,chinese,correct,0.15399977564811707
+levenshtein,typo,,area,north,area=north,somewhere in the nort part of town,north,correct,0.27319975197315216
+levenshtein,typo,,area,south,area=south,the sout part of town,south,correct,0.18440000712871552
+levenshtein,typo,,area,centre,area=centre,in the cntre,centre,correct,0.12650014832615852
+levenshtein,typo,,pricerange,cheap,pricerange=cheap,a cheep restaurant,cheap,correct,0.14520017430186272
+levenshtein,typo,,pricerange,moderate,pricerange=moderate,moderat priced restaurant,moderate,correct,0.11770008131861687
+levenshtein,typo,,pricerange,expensive,pricerange=expensive,an expensiv restaurant,expensive,correct,0.14449981972575188
+levenshtein,paraphrase,,pricerange,expensive,pricerange=expensive,a fancy restaurant,,no match,0.14810031279921532
+levenshtein,paraphrase,,pricerange,cheap,pricerange=cheap,an inexpensive restaurant,expensive,false match,0.22429972887039185
+levenshtein,paraphrase,,pricerange,expensive,pricerange=expensive,a pricey restaurant,,no match,0.18880004063248634
+levenshtein,paraphrase,,pricerange,cheap,pricerange=cheap,an affordable restaurant,,no match,0.19029993563890457
+levenshtein,paraphrase,,pricerange,expensive,pricerange=expensive,an upscale restaurant,,no match,0.20119966939091682
+levenshtein,paraphrase,,pricerange,cheap,pricerange=cheap,a budget restaurant,,no match,0.19659986719489098
+levenshtein,paraphrase,,pricerange,expensive,pricerange=expensive,a costly restaurant,,no match,0.24410011246800423
+levenshtein,paraphrase,,area,north,area=north,the northern part of town,,no match,0.22769998759031296
+levenshtein,paraphrase,,area,south,area=south,the southern part of town,,no match,0.17619971185922623
+levenshtein,paraphrase,,area,east,area=east,the eastern part of town,,no match,0.17370004206895828
+levenshtein,paraphrase,,area,west,area=west,the western part of town,,no match,0.17310027033090591
+levenshtein,paraphrase,area,area,centre,area=centre,downtown,,no match,0.07760012522339821
+levenshtein,paraphrase,food,food,japanese,food=japanese,sushi,,no match,0.12110034003853798
+levenshtein,paraphrase,food,food,italian,food=italian,pizza,,no match,0.1105000264942646
+levenshtein,paraphrase,food,food,indian,food=indian,curry,,no match,0.1083998940885067
+levenshtein,paraphrase,food,food,chinese,food=chinese,noodles,,no match,0.11059967800974846
+levenshtein,none,,,,none,a nice restaurant,,correct,0.13609975576400757
+levenshtein,none,,,,none,a good restaurant,,correct,0.13360008597373962
+levenshtein,none,,,,none,a lovely restaurant,,correct,0.1759999431669712
+levenshtein,none,,,,none,a big restaurant,,correct,0.17670029774308205
+levenshtein,none,,,,none,a quiet restaurant,,correct,0.1733996905386448
+levenshtein,none,,,,none,brazilian food,,correct,0.1376001164317131
+levenshtein,none,,,,none,german food,,correct,0.1325998455286026
+levenshtein,none,,,,none,danish food,food=spanish,false match,0.13530021533370018
+levenshtein,none,,,,none,somewhere in the city,,correct,0.17240038141608238
+semantic,typo,,food,spanish,food=spanish,i want a restaurant serving spenish food,,no match,19.775799941271544
+semantic,typo,,food,chinese,food=chinese,chines food please,,no match,16.268299892544746
+semantic,typo,,food,italian,food=italian,an italien restaurant,,no match,16.455600038170815
+semantic,typo,,food,thai,food=thai,thia food,,no match,15.586600173264742
+semantic,typo,,food,vietnamese,food=vietnamese,i want vietnamise food,,no match,16.218899749219418
+semantic,typo,,food,portuguese,food=portuguese,portugese food,,no match,18.316499888896942
+semantic,typo,,food,korean,food=korean,koren food,,no match,18.153099808841944
+semantic,typo,,food,turkish,food=turkish,turkis food,,no match,19.81579978018999
+semantic,typo,,food,lebanese,food=lebanese,lebanes food,,no match,18.035899847745895
+semantic,typo,food,food,chinese,food=chinese,chinse,,no match,16.39669993892312
+semantic,typo,,area,north,area=north,somewhere in the nort part of town,,no match,16.406700015068054
+semantic,typo,,area,south,area=south,the sout part of town,,no match,18.068599980324507
+semantic,typo,,area,centre,area=centre,in the cntre,,no match,14.297300018370152
+semantic,typo,,pricerange,cheap,pricerange=cheap,a cheep restaurant,,no match,16.594700049608946
+semantic,typo,,pricerange,moderate,pricerange=moderate,moderat priced restaurant,,no match,15.524900052696466
+semantic,typo,,pricerange,expensive,pricerange=expensive,an expensiv restaurant,,no match,16.396500170230865
+semantic,paraphrase,,pricerange,expensive,pricerange=expensive,a fancy restaurant,expensive,correct,15.837300103157759
+semantic,paraphrase,,pricerange,cheap,pricerange=cheap,an inexpensive restaurant,cheap,correct,14.756900258362293
+semantic,paraphrase,,pricerange,expensive,pricerange=expensive,a pricey restaurant,,no match,16.168199945241213
+semantic,paraphrase,,pricerange,cheap,pricerange=cheap,an affordable restaurant,moderate,false match,15.411300119012594
+semantic,paraphrase,,pricerange,expensive,pricerange=expensive,an upscale restaurant,expensive,correct,14.96140006929636
+semantic,paraphrase,,pricerange,cheap,pricerange=cheap,a budget restaurant,cheap,correct,15.818099956959486
+semantic,paraphrase,,pricerange,expensive,pricerange=expensive,a costly restaurant,expensive,correct,14.706399757415056
+semantic,paraphrase,,area,north,area=north,the northern part of town,north,correct,14.58009984344244
+semantic,paraphrase,,area,south,area=south,the southern part of town,,no match,14.998000115156174
+semantic,paraphrase,,area,east,area=east,the eastern part of town,east,correct,15.774100087583065
+semantic,paraphrase,,area,west,area=west,the western part of town,,no match,16.145600005984306
+semantic,paraphrase,area,area,centre,area=centre,downtown,,no match,14.885500073432922
+semantic,paraphrase,food,food,japanese,food=japanese,sushi,,no match,14.616800006479025
+semantic,paraphrase,food,food,italian,food=italian,pizza,,no match,14.021300245076418
+semantic,paraphrase,food,food,indian,food=indian,curry,,no match,15.487900003790855
+semantic,paraphrase,food,food,chinese,food=chinese,noodles,,no match,15.350100118666887
+semantic,none,,,,none,a nice restaurant,,correct,0.17590029165148735
+semantic,none,,,,none,a good restaurant,,correct,0.13559963554143906
+semantic,none,,,,none,a lovely restaurant,,correct,14.099900145083666
+semantic,none,,,,none,a big restaurant,,correct,14.290399849414825
+semantic,none,,,,none,a quiet restaurant,,correct,14.920900110155344
+semantic,none,,,,none,brazilian food,food=portuguese,false match,14.710600022226572
+semantic,none,,,,none,german food,,correct,15.132700093090534
+semantic,none,,,,none,danish food,,correct,14.59809998050332
+semantic,none,,,,none,somewhere in the city,,correct,15.872399788349867

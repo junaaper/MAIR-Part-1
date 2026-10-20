@@ -8,7 +8,7 @@ import warnings
 import pandas as pd
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, f1_score, classification_report
 
-from dialog_acts import DATA_FILE, load_data, original_split, clean_utterance
+from dialog_acts import DATA_FILE, RESULTS_DIR, load_data, original_split, clean_utterance
 from classifiers import BOW_MODELS, EMBEDDING_MODELS, load_model, predict
 
 # A small test file doesn't have to contain every class, this is expected so no need to warn about it
@@ -44,6 +44,7 @@ def evaluate_file(path, model_names, y_train):
         print(classification_report(keywords, y_pred, zero_division=0))
 
         results.append({
+            "file": os.path.basename(path),
             "model": name,
             "accuracy": accuracy_score(keywords, y_pred),
             "balanced_accuracy": balanced_accuracy_score(keywords, y_pred),
@@ -51,7 +52,8 @@ def evaluate_file(path, model_names, y_train):
         })
 
     print(f"\n=== Summary for {os.path.basename(path)} ===")
-    print(pd.DataFrame(results).to_string(index=False, float_format="%.2f"))
+    print(pd.DataFrame(results).drop(columns="file").to_string(index=False, float_format="%.2f"))
+    return results
 
 
 def main():
@@ -63,8 +65,14 @@ def main():
 
     _, _, y_train, _ = original_split(*load_data(DATA_FILE))
     model_names = BOW_MODELS + EMBEDDING_MODELS if args.model == "all" else [args.model]
+    results = []
     for path in args.data:
-        evaluate_file(path, model_names, y_train)
+        results += evaluate_file(path, model_names, y_train)
+
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    output = os.path.join(RESULTS_DIR, "heldout_results.csv")
+    pd.DataFrame(results).to_csv(output, index=False)
+    print(f"\nSaved the results to {output}")
 
 
 if __name__ == "__main__":

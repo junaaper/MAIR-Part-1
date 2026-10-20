@@ -14,14 +14,15 @@ RESTAURANT_FILE = os.path.join(BASE_DIR, "data", "restaurant_info.csv")
 SLOTS = ["area", "food", "pricerange"]
 MATCHERS = ["levenshtein", "semantic"]
 
-MAX_EDIT_DISTANCE = 3        # Upper bound, the real bound also depends on the word length
-SEMANTIC_THRESHOLD = 0.60    # Minimum cosine similarity, tuned with compare_matchers.py --sweep
+MAX_EDIT_DISTANCE = 2        # upper bound 
+SEMANTIC_THRESHOLD = 0.60    # minimum cosine similarity, tuned with compare_matchers.py --sweep
 
 
-def _load_slot_values():
+def _load_slot_values(path=RESTAURANT_FILE):
     """All possible values per slot, taken from the restaurant database."""
-    df = pd.read_csv(RESTAURANT_FILE)
-    return {slot: sorted(df[slot].dropna().unique().tolist()) for slot in SLOTS}
+    df = pd.read_csv(path)
+    df.columns = [str(c).strip().lower() for c in df.columns]
+    return {slot: sorted({str(v).strip().lower() for v in df[slot].dropna() if str(v).strip()}) for slot in SLOTS}
 
 
 SLOT_VALUES = _load_slot_values()
@@ -38,10 +39,23 @@ SYNONYMS = {
 
 # Every keyword (known value or synonym) with its slot and value, longest first so that
 # "north american" is matched before "north"
-KEYWORDS = sorted(
-    [(value, slot, value) for slot in SLOTS for value in SLOT_VALUES[slot]]
-    + [(word, slot, value) for word, (slot, value) in SYNONYMS.items()],
-    key=lambda k: -len(k[0].split()))
+def _build_keywords():
+    return sorted(
+        [(value, slot, value) for slot in SLOTS for value in SLOT_VALUES[slot]]
+        + [(word, slot, value) for word, (slot, value) in SYNONYMS.items()],
+        key=lambda k: -len(k[0].split()))
+
+
+KEYWORDS = _build_keywords()
+
+
+def use_restaurant_file(path):
+    """Take the known values from another restaurant database (e.g. one given with --restaurants)."""
+    global SLOT_VALUES, KEYWORDS, _center
+    SLOT_VALUES = _load_slot_values(path)
+    KEYWORDS = _build_keywords()
+    _value_embeddings.clear()  # The semantic matcher has to embed the new values
+    _center = None
 
 # Common English words that are never a preference, so they are skipped to avoid any issues
 STOPWORDS = set("""
