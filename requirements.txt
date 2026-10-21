@@ -7,3 +7,5 @@ tqdm>=4.65
 torch>=2.0
 transformers>=4.40
 python-Levenshtein>=0.20
+gTTS>=2.5
+pyglet>=2.0

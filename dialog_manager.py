@@ -1,12 +1,16 @@
 import os
 import re
+import io
 import sys
 import copy
 import json
 import random
 import argparse
+import pyglet
+import time
 from datetime import datetime
 from dataclasses import dataclass, field
+from gtts import gTTS
 import pandas as pd
 from dialog_acts import BASE_DIR, clean_utterance
 from classifiers import load_model, predict
@@ -256,6 +260,7 @@ class DialogState:
     last_utterance: str = ""
     matcher: str = "levenshtein"
     transparency: bool = True
+    tts: bool = True
     recommendation_mode: str = "patient"
     unfamiliar: str = None                      # food word the user asked for that isn't in the database
     seen: list = field(default_factory=list)    # names of all restaurants suggested or offered in this dialog
@@ -263,17 +268,25 @@ class DialogState:
     partial: list = None                        # the other partly matching restaurants, offered on request
     rng: random.Random = field(default_factory=random.Random)
 
+def show (state, reply):
+    """Print a system utterance, then read it aloud if TTS is enabled."""
+    print("system:", reply)
+    if state.tts:
+        tts_speak(reply)
 
-def start(matcher="levenshtein", seed=None, transparency=True, recommendation_mode="patient"):
+def start(matcher="levenshtein", seed=None, transparency=True, recommendation_mode="patient", tts=False):
     """A new dialog, returns the start state and the welcome message."""
-    state = DialogState(matcher=matcher, transparency=transparency, recommendation_mode=recommendation_mode, rng=random.Random(seed))
+    state = DialogState(matcher=matcher,
+                        transparency=transparency, 
+                        recommendation_mode=recommendation_mode, 
+                        rng=random.Random(seed), 
+                        tts=tts)
     return state, _say(state, render("welcome"))
 
 
 def _say(state, utterance):
     state.last_utterance = utterance
     return utterance
-
 
 def _reprompt(state, prefix):
     """Say something before repeating the last question, without changing what "repeat" repeats."""
@@ -637,7 +650,17 @@ def log(path, record):
     except OSError as error:
         print(f"(warning: could not write to the log file: {error})")
 
+def tts_speak(utterance):
+    """Speak the text using TTS (text-to-speech)."""
+    with io.BytesIO() as f:
+        gTTS(text=utterance, lang='en').write_to_fp(f)
+        f.seek(0)
 
+        player = pyglet.media.load('_.mp3', file=f).play()
+        while player.playing:
+            pyglet.app.platform_event_loop.dispatch_posted_events()
+            pyglet.clock.tick()
+  
 def main():
     parser = argparse.ArgumentParser(description="Restaurant recommendation dialog system.")
     parser.add_argument("--matcher", default="levenshtein", choices=MATCHERS,
@@ -649,6 +672,7 @@ def main():
     parser.add_argument("--no-log", action="store_true", help="do not write an interaction log")
     parser.add_argument("--log-dir", default=LOG_DIR, help=f"where to write interaction logs (default: {LOG_DIR})")
     parser.add_argument("--recommendation-mode", default="patient", choices=RECOMMENDATION_MODES, help="whether to suggest a restaurant as soon as one preference is known (eager) or wait until all preferences are known (patient, default)")
+    parser.add_argument("--tts", action="store_true", help="enable TTS (text-to-speech) for the system utterances")
     restaurant_file_option(parser)
     args = parser.parse_args()
     apply_restaurant_file_option(args)
@@ -667,8 +691,8 @@ def main():
         {"classifier": CLASSIFIER, "matcher": args.matcher, "transparency": transparency,
          "seed": args.seed, "reasoning": REASONING_AVAILABLE, "recommendation_mode": args.recommendation_mode,
          "restaurants": args.restaurants or "default"}, args.log_dir)
-    state, reply = start(args.matcher, args.seed, transparency, args.recommendation_mode)
-    print("system:", reply)
+    state, reply = start(args.matcher, args.seed, transparency, args.recommendation_mode, tts=args.tts)
+    show(state, reply)
     log(log_path, {"event": "system", "turn": 0, "state": state.state, "utterance": reply})
     turn = 0
     while state.state != FINISHED:
@@ -679,7 +703,7 @@ def main():
             break
         utterance = clean_utterance(text)
         if utterance == "":
-            print("system: Please type a sentence.")
+            show(state, "Please type a sentence.")
             continue
         turn += 1
         act = predict(CLASSIFIER, model, [utterance])[0]
@@ -689,7 +713,7 @@ def main():
             pending = f", pending={state.pending}" if state.pending else ""
             print(f"  [act={act}, state {previous} -> {state.state}, prefs={state.prefs}, "
                   f"extra={state.extra}{pending}]")
-        print("system:", reply)
+        show(state, reply) # Replaces print("system:" reply)
         log(log_path, {"event": "turn", "turn": turn, "user": text, "act": act,
                        "state_before": previous, "state_after": state.state,
                        "prefs": state.prefs, "extra": state.extra,
