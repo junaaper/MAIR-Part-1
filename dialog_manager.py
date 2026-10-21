@@ -268,10 +268,10 @@ class DialogState:
     rng: random.Random = field(default_factory=random.Random)
 
 def show(state, reply):
-    """Print a system utterance, then read it aloud if TTS is enabled."""
+    """Print a system utterance and, if TTS is enabled, start reading it aloud. Returns the player (or None)."""
     print("system:", reply)
     if state.tts:
-        tts_speak(reply)
+        return tts_speak(reply)
 
 def start(matcher="levenshtein", seed=None, transparency=True, recommendation_mode="patient", tts=False):
     """A new dialog, returns the start state and the welcome message."""
@@ -650,15 +650,11 @@ def log(path, record):
         print(f"(warning: could not write to the log file: {error})")
 
 def tts_speak(utterance):
-    """Speak the text using TTS (text-to-speech)."""
+    """Start speaking the text using TTS (text-to-speech) without waiting for it to finish. Returns the player."""
     with io.BytesIO() as f:
         gTTS(text=utterance, lang='en').write_to_fp(f)
         f.seek(0)
-
-        player = pyglet.media.load('_.mp3', file=f).play()
-        while player.playing:
-            pyglet.app.platform_event_loop.dispatch_posted_events()
-            pyglet.clock.tick()
+        return pyglet.media.load('_.mp3', file=f, streaming=False).play()
   
 def main():
     parser = argparse.ArgumentParser(description="Restaurant recommendation dialog system.")
@@ -691,7 +687,7 @@ def main():
          "seed": args.seed, "reasoning": REASONING_AVAILABLE, "recommendation_mode": args.recommendation_mode,
          "restaurants": args.restaurants or "default"}, args.log_dir)
     state, reply = start(args.matcher, args.seed, transparency, args.recommendation_mode, tts=args.tts)
-    show(state, reply)
+    player = show(state, reply)
     log(log_path, {"event": "system", "turn": 0, "state": state.state, "utterance": reply})
     turn = 0
     while state.state != FINISHED:
@@ -700,9 +696,11 @@ def main():
         except (EOFError, KeyboardInterrupt):
             print()
             break
+        if player:
+            player.pause()  # the user answered, so stop reading the previous system utterance aloud
         utterance = clean_utterance(text)
         if utterance == "":
-            show(state, "Please type a sentence.")
+            player = show(state, "Please type a sentence.")
             continue
         turn += 1
         act = predict(CLASSIFIER, model, [utterance])[0]
@@ -712,7 +710,7 @@ def main():
             pending = f", pending={state.pending}" if state.pending else ""
             print(f"  [act={act}, state {previous} -> {state.state}, prefs={state.prefs}, "
                   f"extra={state.extra}{pending}]")
-        show(state, reply) 
+        player = show(state, reply)
         log(log_path, {"event": "turn", "turn": turn, "user": text, "act": act,
                        "state_before": previous, "state_after": state.state,
                        "prefs": state.prefs, "extra": state.extra,
@@ -723,6 +721,11 @@ def main():
                    "suggested": state.current["restaurantname"] if state.current else None})
     if log_path:
         print(f"(interaction log: {log_path})")
+    # let the goodbye message finish playing before the program exits
+    if state.state == FINISHED and player:
+        while player.playing:
+            pyglet.app.platform_event_loop.dispatch_posted_events()
+            pyglet.clock.tick()
 
 
 if __name__ == "__main__":
