@@ -7,7 +7,6 @@ import json
 import random
 import argparse
 import pyglet
-import time
 from datetime import datetime
 from dataclasses import dataclass, field
 from gtts import gTTS
@@ -260,7 +259,7 @@ class DialogState:
     last_utterance: str = ""
     matcher: str = "levenshtein"
     transparency: bool = True
-    tts: bool = True
+    tts: bool = False
     recommendation_mode: str = "patient"
     unfamiliar: str = None                      # food word the user asked for that isn't in the database
     seen: list = field(default_factory=list)    # names of all restaurants suggested or offered in this dialog
@@ -268,7 +267,7 @@ class DialogState:
     partial: list = None                        # the other partly matching restaurants, offered on request
     rng: random.Random = field(default_factory=random.Random)
 
-def show (state, reply):
+def show(state, reply):
     """Print a system utterance, then read it aloud if TTS is enabled."""
     print("system:", reply)
     if state.tts:
@@ -713,7 +712,7 @@ def main():
             pending = f", pending={state.pending}" if state.pending else ""
             print(f"  [act={act}, state {previous} -> {state.state}, prefs={state.prefs}, "
                   f"extra={state.extra}{pending}]")
-        show(state, reply) # Replaces print("system:" reply)
+        show(state, reply) 
         log(log_path, {"event": "turn", "turn": turn, "user": text, "act": act,
                        "state_before": previous, "state_after": state.state,
                        "prefs": state.prefs, "extra": state.extra,
