@@ -16,6 +16,7 @@ from classifiers import load_model, predict
 import slot_extraction
 from slot_extraction import SLOTS, MATCHERS, extract, normalize, warm_up
 from reasoning import satisfies, explain
+import textwrap
 
 CLASSIFIER = "svm"
 RECOMMENDATION_MODES = ["eager", "patient"]
@@ -31,6 +32,7 @@ GIVE_INFO = 5
 FINISHED = 6
 CONFIRM = 7
 ASK_EXTRA = 8
+WIDTH = 72
 
 SLOT_ORDER = ["food", "area", "pricerange"] 
 RELAX_ORDER = ["pricerange", "area"]  # preferences that may be dropped for a partly matching suggestion, food never is
@@ -269,7 +271,7 @@ class DialogState:
 
 def show(state, reply):
     """Print a system utterance and, if TTS is enabled, start reading it aloud. Returns the player (or None)."""
-    print("system:", reply)
+    print("\n" + textwrap.fill(reply, WIDTH, initial_indent="System: ", subsequent_indent="       "))
     if state.tts:
         return tts_speak(reply)
 
@@ -624,7 +626,7 @@ def transition(state, act, utterance):
         state.state = FINISHED
         return state, _say(state, render("goodbye"))
     if act == "restart":
-        return start(state.matcher, state.rng.random(), state.transparency, state.recommendation_mode)
+        return start(state.matcher, state.rng.random(), state.transparency, state.recommendation_mode, state.tts)
     if act == "repeat":
         return state, state.last_utterance
     return state, HANDLERS[state.state](state, act, utterance)
@@ -668,6 +670,7 @@ def main():
     parser.add_argument("--log-dir", default=LOG_DIR, help=f"where to write interaction logs (default: {LOG_DIR})")
     parser.add_argument("--recommendation-mode", default="patient", choices=RECOMMENDATION_MODES, help="whether to suggest a restaurant as soon as one preference is known (eager) or wait until all preferences are known (patient, default)")
     parser.add_argument("--tts", action="store_true", help="enable TTS (text-to-speech) for the system utterances")
+    parser.add_argument("--participant", help="participant ID, written to the interaction log")
     restaurant_file_option(parser)
     args = parser.parse_args()
     apply_restaurant_file_option(args)
@@ -683,7 +686,8 @@ def main():
               "so additional requirements are skipped.")
     transparency = args.transparency == "on"
     log_path = None if args.no_log else start_log(
-        {"classifier": CLASSIFIER, "matcher": args.matcher, "transparency": transparency,
+        {"participant": args.participant, "tts": args.tts,
+         "classifier": CLASSIFIER, "matcher": args.matcher, "transparency": transparency,
          "seed": args.seed, "reasoning": REASONING_AVAILABLE, "recommendation_mode": args.recommendation_mode,
          "restaurants": args.restaurants or "default"}, args.log_dir)
     state, reply = start(args.matcher, args.seed, transparency, args.recommendation_mode, tts=args.tts)
@@ -692,7 +696,7 @@ def main():
     turn = 0
     while state.state != FINISHED:
         try:
-            text = input("user: ").strip()
+            text = input("\nYou: ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
             break
