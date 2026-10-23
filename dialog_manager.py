@@ -4,6 +4,7 @@ import io
 import sys
 import copy
 import json
+import time
 import random
 import argparse
 import pyglet
@@ -644,21 +645,53 @@ def log(path, record):
     """Append one record to the log file; logging never interrupts the dialog."""
     if path is None:
         return
-    record = {"time": datetime.now().isoformat(timespec="seconds"), **record}
+    record = {"time": datetime.now().isoformat(timespec="milliseconds"), **record}
     try:
         with open(path, "a", encoding="utf-8") as f:
             f.write(json.dumps(record, default=str) + "\n")
     except OSError as error:
         print(f"(warning: could not write to the log file: {error})")
 
-def tts_speak(utterance):
-    """Start speaking the text using TTS (text-to-speech) without waiting for it to finish. Returns the player."""
+def tts_mp3(utterance):
+    """Turn the text into speech with Google TTS (needs internet), returns the mp3 as bytes."""
     with io.BytesIO() as f:
         gTTS(text=utterance, lang='en').write_to_fp(f)
-        f.seek(0)
-        return pyglet.media.load('_.mp3', file=f, streaming=False).play()
+        return f.getvalue()
+
+
+def tts_audio(utterance, mp3=None):
+    """A pyglet sound of the text that can be played (mp3 can be given if it was already made)."""
+    with io.BytesIO(mp3 or tts_mp3(utterance)) as f:
+        return pyglet.media.load('_.mp3', file=f, streaming=False)
+
+
+def tts_play(audio):
+    """Start playing a sound from tts_audio without waiting for it to finish. Returns the player."""
+    player = audio.play()
+    player.length = audio.duration  # remembered to tell later whether the speech was cut off
+    return player
+
+
+def tts_speak(utterance):
+    """Start speaking the text using TTS (text-to-speech) without waiting for it to finish. Returns the player."""
+    return tts_play(tts_audio(utterance))
+
+
+def stop_speech(player):
+    """
+    Stop reading aloud. Returns how much of the utterance was played if the speech was cut off
+    (a skip), or None if nothing was playing or it had already finished.
+    """
+    if player is None:
+        return None
+    played, length = player.time, getattr(player, "length", None)
+    player.pause()
+    if length and played < length - 0.3:
+        return {"played_seconds": round(played, 2), "length_seconds": round(length, 2)}
+    return None
   
 def main():
+    program_start = time.monotonic()  # the conversation time runs from here until goodbye
     parser = argparse.ArgumentParser(description="Restaurant recommendation dialog system.")
     parser.add_argument("--matcher", default="levenshtein", choices=MATCHERS,
                         help="fallback for slot extraction when keyword matching fails (default: levenshtein)")
@@ -694,17 +727,22 @@ def main():
     player = show(state, reply)
     log(log_path, {"event": "system", "turn": 0, "state": state.state, "utterance": reply})
     turn = 0
+    end_reason = "quit"
     while state.state != FINISHED:
         try:
             text = input("\nYou: ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
             break
-        if player:
-            player.pause()  # the user answered, so stop reading the previous system utterance aloud
+        # Any Enter stops reading the previous system utterance aloud; cutting it off is a skip
+        skip = stop_speech(player)
+        player = None
+        if skip:
+            log(log_path, {"event": "tts_skip", "turn": turn, "method": "enter" if text == "" else "answer", **skip})
         utterance = clean_utterance(text)
         if utterance == "":
-            player = show(state, "Please type a sentence.")
+            if not skip:
+                player = show(state, "Please type a sentence.")
             continue
         turn += 1
         act = predict(CLASSIFIER, model, [utterance])[0]
@@ -720,7 +758,10 @@ def main():
                        "prefs": state.prefs, "extra": state.extra,
                        "suggested": state.current["restaurantname"] if state.current else None,
                        "system": reply})
-    log(log_path, {"event": "end", "turns": turn, "state": state.state,
+    if state.state == FINISHED:
+        end_reason = "goodbye"
+    log(log_path, {"event": "end", "reason": end_reason, "turns": turn,
+                   "duration_seconds": round(time.monotonic() - program_start, 1), "state": state.state,
                    "prefs": state.prefs, "extra": state.extra,
                    "suggested": state.current["restaurantname"] if state.current else None})
     if log_path:

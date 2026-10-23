@@ -20,6 +20,11 @@ analysis.py                         evaluation for the report (error analysis, d
 chat.py                             interactive prompt to classify your own utterances
 
 dialog_manager.py                   the dialog system: state transition function, templates, lookup, logging (Part 1b)
+ui.py                               window for the usability study: scenario, conversation, text-to-speech
+scenario_a_no_tts.py / _tts.py      study launchers: scenario A without / with text-to-speech
+scenario_b_no_tts.py / _tts.py      study launchers: scenario B without / with text-to-speech
+scenarios/scenario_a.json           scenario A: a romantic dinner (Italian, south, romantic, phone number)
+scenarios/scenario_b.json           scenario B: grandchildren visiting (Indian, centre, cheap, touristic, address)
 slot_extraction.py                  preferences and requests from an utterance: keywords + Levenshtein / semantic fallback
 reasoning.py                        the six inference rules and contradiction handling
 compare_matchers.py                 compares the Levenshtein and semantic slot matchers
@@ -165,6 +170,8 @@ the dialog ends when you say goodbye (Ctrl+C also stops it). Options:
 | `--transparency on\|off`                | show the reasoning behind a recommendation, or only the restaurant (default: on) |
 | `--recommendation-mode patient\|eager`  | wait for all preferences before recommending, or recommend as soon as one is known (default: patient) |
 | `--restaurants CSV`                     | use another restaurant database (default: `data/restaurant_info_extended.csv`) |
+| `--tts`                                 | read the system utterances aloud (needs internet); pressing Enter stops the voice |
+| `--participant ID`                      | participant ID, written to the interaction log                              |
 | `--seed N`                              | random seed for choosing between matching restaurants                      |
 | `--debug`                               | print the dialog act, state and preferences every turn                     |
 | `--no-log`                              | do not write an interaction log                                              |
@@ -174,8 +181,43 @@ the dialog ends when you say goodbye (Ctrl+C also stops it). Options:
 A file given with `--restaurants` needs the columns `restaurantname`, `pricerange`, `area` and `food`;
 the additional requirements also need `food quality`, `crowdedness` and `length of stay`.
 
+## 7. Study window (usability study)
 
-## 7. Reproduce the evaluation
+The user study measures the effect of text-to-speech on user satisfaction. For it there is a window
+instead of the terminal, with large text for older participants. Each study condition has its own
+launcher in the project folder; only the scenario and text-to-speech differ, all other settings are the
+defaults (patient recommendation, transparency on, Levenshtein matcher):
+
+| Launcher               | Scenario | Text-to-speech |
+|------------------------|----------|----------------|
+| `scenario_a_no_tts.py` | A: a romantic dinner        | off |
+| `scenario_a_tts.py`    | A: a romantic dinner        | on  |
+| `scenario_b_no_tts.py` | B: grandchildren visiting   | off |
+| `scenario_b_tts.py`    | B: grandchildren visiting   | on  |
+
+```
+python scenario_a_tts.py --participant P01
+python scenario_b_no_tts.py --participant P01
+```
+
+The window shows the participant's scenario at the top (story and a list of what they want), the
+conversation in the middle and a large input box at the bottom. It opens maximized.
+
+- Type an answer and press **Enter** (or click **Send**).
+- With `--tts` every system utterance is read aloud. **Enter on an empty line**, **Esc** or the
+  **Stop the voice** button stops the voice so the participant can just read; typing an answer also
+  stops it. Every stop before the end of the utterance is logged as a skip.
+- After goodbye the input is locked and the window says the conversation has ended.
+
+Text-to-speech needs an internet connection; without it the text is shown as usual and a `tts_error`
+is logged. The launchers accept the options of `ui.py`, which can also be started directly
+(`python ui.py --scenario scenarios/scenario_a.json --tts`) and takes the same options as
+`dialog_manager.py` (`--transparency`, `--recommendation-mode`, `--matcher`, `--seed`, `--restaurants`,
+`--no-log`, `--log-dir`). A scenario file contains `id`, `title`, `story`, `wishes` (shown to the participant),
+`goal` and `correct_restaurants` (the restaurants that fulfil the scenario, used for `task_success`).
+
+
+## 8. Reproduce the evaluation
 
 Compare the two slot extraction fallbacks on `data/matcher_tests.txt`:
 
@@ -197,17 +239,20 @@ python run_reference_dialogs.py --file path/to/dialogs.txt --restaurants path/to
 It prints the expected and our system utterances side by side, with the dialog act and state of every
 turn. `--file` takes any dialog file in the format of `reference_dialogs.txt`.
 
-## 8. Interaction logs
+## 9. Interaction logs
 
-Every run writes `logs/dialog_<date>_<time>.jsonl`, one JSON record per line (not part of the repository);
-`logs/example_dialog.jsonl` is an example. The records are:
+Every run (terminal or window) writes `logs/dialog_<date>_<time>.jsonl`, one JSON record per line (not
+part of the repository); `logs/example_dialog.jsonl` is an example. Every record has a `time` with
+milliseconds. The records are:
 
-| Event    | Fields |
-|----------|--------|
-| `config` | `classifier`, `matcher`, `transparency`, `seed`, `reasoning` (reasoning columns found), `recommendation_mode`, `restaurants` |
-| `system` | `turn` (0), `state`, `utterance` – the welcome message |
-| `turn`   | `turn`, `user` (what was typed), `act` (predicted dialog act), `state_before`, `state_after`, `prefs` (area, food, pricerange), `extra` (additional requirements), `suggested` (restaurant suggested so far), `system` (the reply) |
-| `end`    | `turns`, `state` (6 if the user said goodbye), `prefs`, `extra`, `suggested` |
+| Event      | Fields |
+|------------|--------|
+| `config`   | `participant`, `tts`, `classifier`, `matcher`, `transparency`, `seed`, `reasoning` (reasoning columns found), `recommendation_mode`, `restaurants`; in the window also `interface` and `scenario` |
+| `system`   | `turn` (0), `state`, `utterance` – the welcome message |
+| `turn`     | `turn`, `user` (what was typed), `act` (predicted dialog act), `state_before`, `state_after`, `prefs` (area, food, pricerange), `extra` (additional requirements), `suggested` (restaurant suggested so far), `system` (the reply) |
+| `tts_skip` | `turn`, `method` (`enter`, `escape`, `button` or `answer`), `played_seconds`, `length_seconds` (`null` if the voice was stopped before it started) |
+| `tts_error`| `turn`, `error` – the text could not be read aloud (e.g. no internet); the text is still shown |
+| `end`      | `reason` (`goodbye`, `quit` or `window closed`), `turns`, `duration_seconds` (from the start of the program until the end), `state`, `prefs`, `extra`, `suggested`; in the window also `scenario` and `task_success` (the suggested restaurant fulfils the scenario) |
 
 
 ## Notes

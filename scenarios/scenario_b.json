@@ -1,0 +1,21 @@
+{
+  "id": "grandchildren_visit",
+  "title": "Your grandchildren are visiting",
+  "story": "Your grandchildren are visiting Cambridge from abroad for the first time. They love Indian food and want to see the city centre. Use the system to find a restaurant for lunch, and then ask for its address so you can walk there together.",
+  "wishes": [
+    "Indian food",
+    "In the centre of town",
+    "A cheap restaurant",
+    "It must be touristic, because your grandchildren are tourists",
+    "Ask for the address",
+    "When you are done, say goodbye (for example: \"thank you, goodbye\")"
+  ],
+  "goal": {
+    "food": "indian",
+    "area": "centre",
+    "pricerange": "cheap",
+    "requirements": {"touristic": true},
+    "ask_for": ["addr"]
+  },
+  "correct_restaurants": ["mahal of cambridge"]
+}

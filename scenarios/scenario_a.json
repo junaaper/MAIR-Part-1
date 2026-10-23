@@ -1,0 +1,21 @@
+{
+  "id": "romantic_dinner",
+  "title": "A romantic evening",
+  "story": "You and your partner are celebrating your wedding anniversary tonight. You would like to have dinner at a nice Italian restaurant. Use the system to find a restaurant, and then ask for its phone number so you can book a table.",
+  "wishes": [
+    "Italian food",
+    "In the south of town",
+    "The price does not matter",
+    "It must be romantic, because you are a couple",
+    "Ask for the phone number",
+    "When you are done, say goodbye (for example: \"thank you, goodbye\")"
+  ],
+  "goal": {
+    "food": "italian",
+    "area": "south",
+    "pricerange": "dontcare",
+    "requirements": {"romantic": true},
+    "ask_for": ["phone"]
+  },
+  "correct_restaurants": ["frankie and bennys", "la margherita", "pizza hut cherry hinton"]
+}
